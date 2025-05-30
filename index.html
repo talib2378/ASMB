@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>اپنا سوشل میڈیا کا اپنا بلڈ بینک</title>
+  <style>
+    body {
+      font-family: 'Noto Nastaliq Urdu', serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      direction: rtl;
+      text-align: right;
+    }
+    header {
+      background-color: #e60000;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .whatsapp-links {
+      margin-top: 5px;
+    }
+    .whatsapp-links a {
+      color: white;
+      text-decoration: none;
+      margin: 0 10px;
+      font-size: 1rem;
+    }
+    .search-bar {
+      margin: 20px auto;
+      text-align: center;
+    }
+    .search-bar input {
+      padding: 10px;
+      width: 80%;
+      max-width: 500px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    .donor-form {
+      margin: 20px auto;
+      max-width: 500px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .donor-form h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-step {
+      margin-bottom: 15px;
+    }
+    .form-step input, .form-step select {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .form-step button {
+      background-color: #e60000;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .donor-list {
+      margin: 20px auto;
+      max-width: 600px;
+    }
+    .donor-entry {
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+    }
+    .logo {
+      max-width: 100px;
+      display: block;
+      margin: 10px auto;
+    }
+    .add-donor-btn {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #e60000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      font-size: 2rem;
+      text-align: center;
+      line-height: 50px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Red_Cross_logo.svg/1024px-Red_Cross_logo.svg.png" alt="بلڈ بینک لوگو" class="logo" />
+    <h1>اپنا سوشل میڈیا کا اپنا بلڈ بینک</h1>
+    <div class="whatsapp-links">
+      <a href="https://wa.me/923006267517">📱 03006267517</a>
+      <a href="https://wa.me/923174036186">📱 03174036186</a>
+    </div>
+  </header>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search by Blood Group or City (e.g. B+, Lahore)" onkeyup="searchDonors(this.value)" />
+  </div>
+
+  <div class="donor-form" id="donorForm" style="display:none;">
+    <h2>Add Donor</h2>
+    <div class="form-step"><input type="text" id="donorName" placeholder="Full Name (English)" /></div>
+    <div class="form-step">
+      <select id="donorBlood">
+        <option value="">Select Blood Group</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+      </select>
+    </div>
+    <div class="form-step"><input type="text" id="donorCity" placeholder="City (English)" /></div>
+    <div class="form-step"><input type="text" id="donorPhone" placeholder="Phone Number" /></div>
+    <div class="form-step"><button onclick="addDonor()">Submit</button></div>
+  </div>
+
+  <div class="donor-list" id="donorList"></div>
+
+  <button class="add-donor-btn" onclick="toggleForm()">+</button>
+
+  <script>
+    let donors = [];
+
+    function toggleForm() {
+      const form = document.getElementById('donorForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function addDonor() {
+      const name = document.getElementById('donorName').value;
+      const blood = document.getElementById('donorBlood').value;
+      const city = document.getElementById('donorCity').value;
+      const phone = document.getElementById('donorPhone').value;
+
+      if (!name || !blood || !city || !phone) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      const donor = { name, blood, city, phone };
+      donors.push(donor);
+      displayDonors();
+      toggleForm();
+    }
+
+    function displayDonors(filter = "") {
+      const list = document.getElementById("donorList");
+      list.innerHTML = "";
+
+      donors.filter(d => 
+        d.name.toLowerCase().includes(filter.toLowerCase()) ||
+        d.city.toLowerCase().includes(filter.toLowerCase()) ||
+        d.blood.toLowerCase().includes(filter.toLowerCase())
+      ).forEach((d, index) => {
+        const div = document.createElement("div");
+        div.className = "donor-entry";
+        div.innerHTML = `<strong>${d.name}</strong><br>Blood Group: ${d.blood}<br>City: ${d.city}<br>Phone: ${d.phone} <br><button onclick="removeDonor(${index})">Remove</button>`;
+        list.appendChild(div);
+      });
+    }
+
+    function removeDonor(index) {
+      if (confirm("Are you sure you want to remove this donor?")) {
+        donors.splice(index, 1);
+        displayDonors();
+      }
+    }
+
+    function searchDonors(value) {
+      displayDonors(value);
+    }
+  </script>
+
+</body>
+</html>
